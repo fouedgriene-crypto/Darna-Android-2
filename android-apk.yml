@@ -1,0 +1,32 @@
+name: Compiler DARNA APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Recuperer le projet
+        uses: actions/checkout@v4
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Installer Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Installer SDK Android
+        uses: android-actions/setup-android@v3
+      - name: Compiler APK Android
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Publier APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: DARNA-Android-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
